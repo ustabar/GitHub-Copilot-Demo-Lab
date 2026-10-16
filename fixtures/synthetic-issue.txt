@@ -1,0 +1,18 @@
+SENTETİK LAB ISSUE — gerçek GitHub issue numarası/URL'si yoktur.
+Yerel etiket: LOCAL-DEMO-IDEMPOTENCY
+Başlık: Sipariş tekrarları tek sipariş olarak işlenmeli
+
+Örnek:
+POST /api/orders
+X-Customer-Id: demo-customer-a
+Idempotency-Key: demo-order-001
+{"sku":"DEMO-KEYBOARD","quantity":1}
+
+İlk istek 201; aynı istek 200 ve aynı sipariş.
+Gövde değişirse 409 ProblemDetails + code=idempotency_conflict.
+Restart, eşzamanlılık ve müşteri izolasyonu korunmalı.
+Sınırlar ve tüm kabul kriterleri order-contract.json ile
+acceptance-matrix.json dosyalarındadır.
+
+Bu metin demo girdisidir; issue açıldığı veya bir ajan tarafından
+çalışıldığı anlamına gelmez.

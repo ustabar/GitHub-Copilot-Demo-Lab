@@ -1,0 +1,10 @@
+{
+  "folders": [
+    { "name": "API", "path": "src/Orders.Api" },
+    { "name": "WEB", "path": "src/Orders.Web" },
+    { "name": "TESTS", "path": "tests/Orders.Api.Tests" }
+  ],
+  "settings": {
+    "files.exclude": { "**/bin": true, "**/obj": true, "**/node_modules": true }
+  }
+}

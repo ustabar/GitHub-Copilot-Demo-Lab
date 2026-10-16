@@ -1,0 +1,12 @@
+{
+  "name": "Orders daily quality scan",
+  "status": "draft-not-installed",
+  "scheduleSuggestion": "Every weekday at 09:00 Europe/Istanbul",
+  "initialRun": "Manual / Run now only after review",
+  "allowedScope": "Read this repository and run existing local build/test scripts",
+  "prohibitedActions": ["change source", "commit", "push", "merge", "change permissions", "call production"],
+  "command": "pwsh -NoProfile -File .\\scripts\\Invoke-QualityGate.ps1 -Hours 24",
+  "output": "artifacts\\quality-gate\\<run>\\report.md",
+  "requirements": ["Awake machine", "Available agent/host", "Approved local test permissions", "Dependencies installed"],
+  "note": "Documentation recipe, not an importable VS Code API schema. Nothing has been scheduled."
+}

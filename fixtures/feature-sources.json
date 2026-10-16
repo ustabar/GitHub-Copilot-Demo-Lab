@@ -1,0 +1,38 @@
+{
+  "checkedOn": "2026-10-06",
+  "purpose": "Official public references for version-sensitive customization features; not a guarantee that a particular account or client enables them.",
+  "sources": [
+    {
+      "feature": "repository and path-specific instructions",
+      "url": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/add-custom-instructions/add-repository-instructions",
+      "note": "Repository-wide and matching path-specific instructions combine; feature support varies by Copilot surface."
+    },
+    {
+      "feature": "project agent skills",
+      "url": "https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills",
+      "note": ".github/skills/<name>/SKILL.md uses name and description frontmatter. No shell auto-approval is configured by this lab. gh skill is documented as public preview; this lab does not require it."
+    },
+    {
+      "feature": "VS Code prompt files",
+      "url": "https://code.visualstudio.com/docs/agent-customization/prompt-files",
+      "note": "At verification time, prompt files remain supported by Local agent but are deprecated/not loaded in Agent Host sessions. The documented prompt-to-skill migration is experimental. If unavailable, explicitly paste the prompt text; do not claim it was loaded."
+    },
+    {
+      "feature": "workspace stdio MCP configuration",
+      "url": "https://code.visualstudio.com/docs/agents/reference/mcp-configuration",
+      "note": ".vscode/mcp.json with servers/type/command/args/cwd is supported; current docs prefer portable .mcp.json for new configurations. This lab intentionally provides the requested VS Code compatibility format. Review and start on demand; no auto-start task is supplied."
+    },
+    {
+      "feature": "MCP server trust and management",
+      "url": "https://code.visualstudio.com/docs/agent-customization/mcp-servers",
+      "note": "Trust is a user action. The Agent Customizations editor is labeled Preview. This lab neither grants trust nor changes global permissions."
+    },
+    {
+      "feature": "official TypeScript SDK v1",
+      "url": "https://github.com/modelcontextprotocol/typescript-sdk/tree/v1.x",
+      "note": "The required @modelcontextprotocol/sdk package is the v1 maintenance line, implementing MCP through 2025-11-25. Do not present it as the current v2 SDK or claim newer protocol features. Exact npm package versions are pinned and locked."
+    }
+  ],
+  "modelPolicy": "No model ID is pinned and no model availability, price, quota or BYOK eligibility is promised. Verify the current client/account/provider UI and official documentation during the demo.",
+  "pluginPolicy": "No plugin manifest is supplied and no plugin installation is claimed. The repository quality-gate skill is the portable teaching artifact."
+}

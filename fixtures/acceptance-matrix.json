@@ -1,0 +1,169 @@
+{
+  "contractVersion": "1.0.0",
+  "synthetic": true,
+  "purpose": "Machine-readable expected acceptance outcomes, NOT a test execution report.",
+  "contractFile": "order-contract.json",
+  "execution": {
+    "defaultMode": "fixed",
+    "isolateStorePerScenario": true,
+    "restartPreservesStore": true,
+    "customerA": "demo-customer-a",
+    "customerB": "demo-customer-b",
+    "key": "demo-order-001",
+    "body": { "sku": "DEMO-KEYBOARD", "quantity": 1 }
+  },
+  "actionSemantics": {
+    "defaults": "Unless overridden, requests use customerA, key and body from execution; customer A/B selects customerA/customerB. The literal default also selects the execution value.",
+    "isolation": "Each case begins with an empty isolated store. Actions within a case share the same store and key unless overridden.",
+    "statuses": "Expected statuses list only HTTP responses, in action order; restart/start operations do not produce HTTP statuses.",
+    "postEach": "Run one POST per listed value; alsoStringLength adds one SKU consisting of that many x characters.",
+    "generatedLengths": "skuLength/headerLengths generate a string of x characters at the requested length.",
+    "getCreatedId": "Read the id returned by the preceding successful POST.",
+    "postConcurrent": "Submit count equivalent POST requests concurrently and compare their status multiset and returned ids.",
+    "expectedMeaning": "All expected outcomes describe fixed mode. intentionalFailureModes identifies selected checkpoints that should violate this case, not a result from an executed test.",
+    "runner": "This JSON is acceptance data for test authors, not an executable test runner or evidence of execution."
+  },
+  "cases": [
+    {
+      "id": "create",
+      "actions": [{ "operation": "post", "customer": "A", "key": "default", "body": "default" }],
+      "expected": { "statuses": [201], "orderCount": 1, "locationHeader": true, "responseFields": ["id", "customerId", "sku", "quantity", "createdAt"] }
+    },
+    {
+      "id": "replay",
+      "actions": [{ "operation": "post", "repeat": 2, "customer": "A", "key": "default", "body": "default" }],
+      "expected": { "statuses": [201, 200], "sameOrder": true, "orderCount": 1 },
+      "intentionalFailureModes": ["duplicate"]
+    },
+    {
+      "id": "changed-quantity",
+      "actions": [{ "operation": "post", "body": "default" }, { "operation": "post", "body": { "sku": "DEMO-KEYBOARD", "quantity": 2 } }],
+      "expected": { "statuses": [201, 409], "problemCode": "idempotency_conflict", "orderCount": 1 },
+      "intentionalFailureModes": ["duplicate", "payload"]
+    },
+    {
+      "id": "changed-sku",
+      "actions": [{ "operation": "post", "body": "default" }, { "operation": "post", "body": { "sku": "DEMO-MOUSE", "quantity": 1 } }],
+      "expected": { "statuses": [201, 409], "problemCode": "idempotency_conflict", "orderCount": 1 },
+      "intentionalFailureModes": ["duplicate", "payload"]
+    },
+    {
+      "id": "json-property-order",
+      "actions": [{ "operation": "post", "rawBody": "{\"sku\":\"DEMO-KEYBOARD\",\"quantity\":1}" }, { "operation": "post", "rawBody": "{ \"quantity\": 1, \"sku\": \"DEMO-KEYBOARD\" }" }],
+      "expected": { "statuses": [201, 200], "sameOrder": true }
+    },
+    {
+      "id": "restart-replay",
+      "actions": [{ "operation": "post" }, { "operation": "restart", "sameStore": true }, { "operation": "post" }],
+      "expected": { "statuses": [201, 200], "sameOrder": true, "orderCount": 1 },
+      "intentionalFailureModes": ["duplicate", "memory"]
+    },
+    {
+      "id": "restart-conflict",
+      "actions": [{ "operation": "post" }, { "operation": "restart", "sameStore": true }, { "operation": "post", "body": { "sku": "DEMO-KEYBOARD", "quantity": 2 } }],
+      "expected": { "statuses": [201, 409], "problemCode": "idempotency_conflict" },
+      "intentionalFailureModes": ["duplicate", "memory", "payload"]
+    },
+    {
+      "id": "customer-scoped-key",
+      "actions": [{ "operation": "post", "customer": "A" }, { "operation": "post", "customer": "B" }],
+      "expected": { "statuses": [201, 201], "differentIds": true, "orderCountPerCustomer": 1 }
+    },
+    {
+      "id": "customer-scoped-list",
+      "actions": [{ "operation": "post", "customer": "A" }, { "operation": "list", "customer": "B" }, { "operation": "list", "customer": "A" }],
+      "expected": { "statuses": [201, 200, 200], "listCounts": [0, 1] }
+    },
+    {
+      "id": "customer-scoped-read",
+      "actions": [{ "operation": "post", "customer": "A" }, { "operation": "getCreatedId", "customer": "B" }, { "operation": "getCreatedId", "customer": "A" }],
+      "expected": { "statuses": [201, 404, 200] }
+    },
+    {
+      "id": "concurrent-replay",
+      "actions": [{ "operation": "postConcurrent", "count": 8 }],
+      "expected": { "statusCounts": { "201": 1, "200": 7 }, "distinctIdCount": 1, "orderCount": 1 },
+      "intentionalFailureModes": ["duplicate"]
+    },
+    {
+      "id": "quantity-boundaries",
+      "actions": [{ "operation": "postEach", "freshKeyEach": true, "quantities": [1, 100] }],
+      "expected": { "statuses": [201, 201] }
+    },
+    {
+      "id": "invalid-quantity",
+      "actions": [{ "operation": "postEach", "quantities": [0, -1, 101, 1.5] }],
+      "expected": { "statuses": [400, 400, 400, 400], "orderCount": 0 }
+    },
+    {
+      "id": "invalid-sku",
+      "actions": [{ "operation": "postEach", "skus": ["", "   ", null], "alsoStringLength": 65 }],
+      "expected": { "statuses": [400, 400, 400, 400], "orderCount": 0 }
+    },
+    {
+      "id": "sku-max-length",
+      "actions": [{ "operation": "post", "skuLength": 64 }],
+      "expected": { "statuses": [201] }
+    },
+    {
+      "id": "missing-headers",
+      "actions": [{ "operation": "post", "omitHeader": "X-Customer-Id" }, { "operation": "post", "omitHeader": "Idempotency-Key" }, { "operation": "list", "omitHeader": "X-Customer-Id" }],
+      "expected": { "statuses": [400, 400, 400], "orderCount": 0 }
+    },
+    {
+      "id": "oversized-headers",
+      "actions": [{ "operation": "post", "headerLengths": { "X-Customer-Id": 65 } }, { "operation": "post", "headerLengths": { "Idempotency-Key": 129 } }],
+      "expected": { "statuses": [400, 400], "orderCount": 0 }
+    },
+    {
+      "id": "header-max-length",
+      "actions": [{ "operation": "post", "headerLengths": { "X-Customer-Id": 64, "Idempotency-Key": 128 } }],
+      "expected": { "statuses": [201] }
+    },
+    {
+      "id": "blank-headers",
+      "actions": [{ "operation": "post", "headers": { "X-Customer-Id": "   " } }, { "operation": "post", "headers": { "Idempotency-Key": "   " } }],
+      "expected": { "statuses": [400, 400], "orderCount": 0 }
+    },
+    {
+      "id": "multiple-header-values",
+      "actions": [{ "operation": "post", "headers": { "X-Customer-Id": ["demo-customer-a", "demo-customer-b"] } }, { "operation": "post", "headers": { "Idempotency-Key": ["demo-order-001", "demo-order-002"] } }],
+      "expected": { "statuses": [400, 400], "orderCount": 0 }
+    },
+    {
+      "id": "missing-request-fields",
+      "actions": [{ "operation": "post", "body": { "quantity": 1 } }, { "operation": "post", "body": { "sku": "DEMO-KEYBOARD" } }],
+      "expected": { "statuses": [400, 400], "orderCount": 0 }
+    },
+    {
+      "id": "invalid-does-not-consume-key",
+      "actions": [{ "operation": "post", "body": { "sku": "", "quantity": 1 } }, { "operation": "post", "body": "default" }],
+      "expected": { "statuses": [400, 201], "orderCount": 1 }
+    },
+    {
+      "id": "health",
+      "actions": [{ "operation": "health", "headers": {} }],
+      "expected": { "statuses": [200] }
+    },
+    {
+      "id": "invalid-order-id",
+      "actions": [{ "operation": "get", "id": "not-a-guid" }],
+      "expected": { "statuses": [400], "problemCode": "invalid_order_id" }
+    },
+    {
+      "id": "unsupported-media-type",
+      "actions": [{ "operation": "post", "contentType": "text/plain" }],
+      "expected": { "statuses": [415], "problemCode": "unsupported_media_type" }
+    },
+    {
+      "id": "unknown-json-field",
+      "actions": [{ "operation": "post", "body": { "sku": "DEMO-KEYBOARD", "quantity": 1, "unexpected": true } }],
+      "expected": { "statuses": [400], "problemCode": "invalid_json", "orderCount": 0 }
+    },
+    {
+      "id": "production-checkpoint-guard",
+      "actions": [{ "operation": "startEach", "environment": "Production", "modes": ["duplicate", "memory", "payload"] }],
+      "expected": { "allStartsRejected": true }
+    }
+  ]
+}

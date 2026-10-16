@@ -1,0 +1,24 @@
+{
+  "synthetic": true,
+  "fixtureId": "LOCAL-DEMO-IDEMPOTENCY",
+  "githubIssueNumber": null,
+  "githubUrl": null,
+  "title": "Sipariş tekrarları tek sipariş olarak işlenmeli",
+  "body": "Aynı sentetik müşteri aynı Idempotency-Key ve gövdeyle isteği tekrar ederse yeni sipariş oluşuyor. Ağ tekrarı, eşzamanlı istek ve servis restart senaryolarını sözleşmeye uygun hale getir.",
+  "contractVersion": "1.0.0",
+  "contractFile": "order-contract.json",
+  "acceptanceFile": "acceptance-matrix.json",
+  "acceptanceCriteria": [
+    "POST ilk oluşturma 201; aynı müşteri/anahtar/gövde tekrarı 200 ve aynı sipariş.",
+    "Aynı müşteri/anahtar ile sku veya quantity değişirse 409 ProblemDetails ve code=idempotency_conflict.",
+    "Aynı veri deposuyla yeniden başlatma replay ve conflict davranışını korur.",
+    "Farklı müşteriler aynı anahtarı bağımsız kullanır; GET list/id müşteri kapsamında kalır.",
+    "sku boş olamaz ve en fazla 64 karakterdir; quantity 1..100 tamsayıdır; header sınırları doğrulanır.",
+    "Testler ilk önce davranış nedeniyle kırmızı, düzeltme sonrası yeşil olur."
+  ],
+  "constraints": [
+    "X-Customer-Id gerçek auth değildir.",
+    "Development dışına hatalı checkpoint taşınmaz.",
+    "Gerçek GitHub issue/PR veya müşteri verisi kullanılmaz."
+  ]
+}

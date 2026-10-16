@@ -1,0 +1,18 @@
+ILLUSTRATIVE SYNTHETIC PRIOR-PR PATCH — not real Git history or a GitHub PR.
+No real PR number, commit hash, author, URL, or executed review is implied.
+This text documents intended behavior; do not apply it to the current checkout.
+The target below is imaginary and deliberately outside the runnable source.
+
+diff --git a/illustrative/contract-intent.txt b/illustrative/contract-intent.txt
+--- a/illustrative/contract-intent.txt
++++ b/illustrative/contract-intent.txt
+@@ -1,2 +1,7 @@
+-Every POST creates a new order.
+-An idempotency key is globally unique.
++The first successful POST returns 201 and a Location header.
++Replay the original order with 200 for the same customer, key and payload.
++Reject changed sku or quantity with 409 ProblemDetails.
++The conflict extension code is idempotency_conflict.
++Scope the idempotency key to the synthetic customer.
++Persist enough information to preserve replay and conflict after restart.
++X-Customer-Id demonstrates isolation only; it does not authenticate callers.

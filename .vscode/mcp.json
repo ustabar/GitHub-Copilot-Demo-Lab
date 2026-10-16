@@ -1,0 +1,10 @@
+{
+  "servers": {
+    "orders-contract": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${workspaceFolder}\\tools\\contract-mcp\\server.mjs"],
+      "cwd": "${workspaceFolder}"
+    }
+  }
+}

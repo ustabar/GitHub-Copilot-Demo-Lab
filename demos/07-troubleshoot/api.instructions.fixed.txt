@@ -1,0 +1,10 @@
+---
+applyTo: "src/Orders.Api/**/*.cs"
+---
+
+# API hata sözleşmesi
+
+API hataları application/problem+json kullanmalı. ProblemDetails içinde status,
+title, detail ve kararlı bir code alanı bulunmalı. Aynı müşteri ve anahtarın farklı
+payload ile tekrarı 409 ve code=idempotency_conflict üretmeli.
+Kapsamın doğru olması modelin her çıktısının doğru olacağını garanti etmez.

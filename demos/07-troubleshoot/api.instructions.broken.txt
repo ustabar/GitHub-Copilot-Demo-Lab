@@ -1,0 +1,10 @@
+---
+applyTo: "src/Legacy.Api/**/*.cs"
+---
+
+# API hata sözleşmesi
+
+API hataları application/problem+json kullanmalı. ProblemDetails içinde status,
+title, detail ve kararlı bir code alanı bulunmalı. Aynı müşteri ve anahtarın farklı
+payload ile tekrarı 409 ve code=idempotency_conflict üretmeli.
+Bu talimat bozuk kapsam örneğidir; yalnız izole demo kopyasında etkinleştirilir.

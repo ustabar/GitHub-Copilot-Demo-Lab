@@ -1,0 +1,13 @@
+Bu repository'nin mevcut branch'inde son 24 saatteki commitleri ve ayrıca henüz
+commit edilmemiş değişiklikleri ayrı ayrı incele. Sipariş oluşturma ve retry
+davranışını etkileyen değişiklikleri belirle. quality-gate skill prosedürünü uygula.
+Mevcut scripts\Invoke-QualityGate.ps1 -Hours 24 komutunu çalıştır.
+Repo Git checkout değilse 24 saatlik kapsamın çıkarılamadığını açıkça bildir;
+tam yerel kalite kontrolünün buna alternatif olduğunu, tarihsel analiz
+yapılmadığını belirt.
+
+İlgili testleri, eksik senaryoları ve başarısızlıkları kaynaklarıyla raporla.
+Çalışmayan test veya erişilemeyen araç için başarılı çıktı uydurma.
+Kod değiştirme, commit/push/merge yapma, izin veya secret ayarı değiştirme.
+Testlerin yerel çıktı üretmesi dışında yazma işi yapma. Uygulama dosyalarını
+düzeltmen gerektiğini düşünürsen öneriyi rapora ekle ve insan kararına bırak.

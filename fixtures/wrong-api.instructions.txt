@@ -1,0 +1,13 @@
+---
+applyTo: "src/Legacy.Api/**"
+---
+
+# Kasıtlı yanlış kapsam — pasif eğitim fixture'ı
+
+Bu dosya .txt uzantısıyla fixtures altında tutulur; aktif Copilot instruction değildir.
+Sorun giderme demosunda içeriği değerlendir: gerçek API src/Orders.Api altındadır.
+Yanlış applyTo yüzünden bu yol kapsamlı instruction API C# dosyalarıyla eşleşmez.
+Çalışan örnek: .github/instructions/api.instructions.md
+
+API tekrarlarında ilk istek 201, aynı gövde 200, değişen gövde 409 olmalıdır.
+Bu metin otomatik yüklenmiş veya modele uygulanmış sayılmaz.

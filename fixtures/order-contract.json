@@ -1,0 +1,148 @@
+{
+  "contractVersion": "1.0.0",
+  "title": "Synthetic Orders API teaching contract",
+  "synthetic": true,
+  "productionReady": false,
+  "identityWarning": "X-Customer-Id is a caller-controlled synthetic customer scope, NOT authentication or authorization.",
+  "basePath": "/api/orders",
+  "headers": {
+    "X-Customer-Id": {
+      "requiredFor": ["POST /api/orders", "GET /api/orders", "GET /api/orders/{id}"],
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "nonWhitespace": true,
+      "singleValue": true
+    },
+    "Idempotency-Key": {
+      "requiredFor": ["POST /api/orders"],
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "nonWhitespace": true,
+      "singleValue": true
+    }
+  },
+  "createRequestSchema": {
+    "type": "object",
+    "required": ["sku", "quantity"],
+    "additionalProperties": false,
+    "properties": {
+      "sku": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+      },
+      "quantity": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "description": "JSON integer token only; numeric strings are rejected."
+      }
+    }
+  },
+  "orderResponseSchema": {
+    "type": "object",
+    "required": ["id", "customerId", "sku", "quantity", "createdAt"],
+    "properties": {
+      "id": { "type": "string", "format": "uuid" },
+      "customerId": { "type": "string", "minLength": 1, "maxLength": 64 },
+      "sku": { "type": "string", "minLength": 1, "maxLength": 64 },
+      "quantity": { "type": "integer", "minimum": 1, "maximum": 100 },
+      "createdAt": { "type": "string", "format": "date-time" }
+    }
+  },
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/orders",
+      "responses": {
+        "201": "First successful creation; order response and Location header.",
+        "200": "Same customer, key, sku and quantity: return the original complete order.",
+        "400": "Invalid request body or required headers.",
+        "409": "Same customer and key but changed sku or quantity; ProblemDetails with code=idempotency_conflict.",
+        "413": "Request exceeds the 16384-byte body limit.",
+        "415": "Request does not have a JSON content type."
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders",
+      "responses": {
+        "200": "JSON array containing only this synthetic customer's orders, including [] when empty.",
+        "400": "Missing or invalid X-Customer-Id."
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/orders/{id}",
+      "responses": {
+        "200": "Order belonging to this synthetic customer.",
+        "400": "Missing or invalid X-Customer-Id, or a non-GUID id.",
+        "404": "Order does not exist in this synthetic customer's scope."
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "responses": { "200": "Service is healthy; no customer or idempotency header required." }
+    }
+  ],
+  "errorResponse": {
+    "format": "ProblemDetails",
+    "mediaType": "application/problem+json",
+    "extension": "code",
+    "codes": {
+      "invalid_customer_id": 400,
+      "invalid_idempotency_key": 400,
+      "invalid_json": 400,
+      "invalid_body": 400,
+      "invalid_sku": 400,
+      "invalid_quantity": 400,
+      "invalid_order_id": 400,
+      "order_not_found": 404,
+      "not_found": 404,
+      "method_not_allowed": 405,
+      "idempotency_conflict": 409,
+      "request_too_large": 413,
+      "unsupported_media_type": 415,
+      "internal_error": 500
+    }
+  },
+  "requestLimits": {
+    "maxBodyBytes": 16384,
+    "identifierPolicy": "SKU and both headers start with an ASCII letter or digit; remaining characters are ASCII letters, digits, dots, underscores or hyphens."
+  },
+  "idempotency": {
+    "scope": ["customerId", "idempotencyKey"],
+    "comparedFields": ["sku", "quantity"],
+    "comparison": "Compare parsed sku and quantity exactly; SKU comparison is case-sensitive. JSON formatting whitespace and property order do not affect equality.",
+    "conflictCode": "idempotency_conflict",
+    "concurrentSameRequests": "Exactly one creation (201); all other successful requests replay (200) the same id.",
+    "restart": "A process restart using the same data store must preserve replay identity and payload-conflict detection.",
+    "differentCustomers": "The same key is independent for each synthetic customer.",
+    "validation": "Validate before writing; rejected input must not consume the key.",
+    "retention": "No automatic expiry is specified in this local teaching lab.",
+    "outOfScope": ["Production authentication", "Distributed multi-instance coordination", "Payment processing"]
+  },
+  "checkpoints": {
+    "setting": "Orders:Mode",
+    "default": "fixed",
+    "nonFixedEnvironment": "Development only",
+    "modes": {
+      "fixed": "Reference implementation satisfies the acceptance matrix.",
+      "duplicate": "Intentional failure: replay creates another order.",
+      "memory": "Intentional failure: idempotency state does not survive process restart.",
+      "payload": "Intentional failure: same key replays without comparing sku/quantity."
+    }
+  },
+  "example": {
+    "method": "POST",
+    "path": "/api/orders",
+    "headers": { "X-Customer-Id": "demo-customer-a", "Idempotency-Key": "demo-order-001" },
+    "body": { "sku": "DEMO-KEYBOARD", "quantity": 1 }
+  }
+}

@@ -1,0 +1,9 @@
+Yalnız aşağıdaki sentetik değişiklik özetine bakarak kısa bir İngilizce commit
+başlığı öner. Dosya değiştirme, commit oluşturma, araç çalıştırma.
+
+Değişiklik: Sipariş oluşturma, müşteri ve idempotency anahtarıyla SQLite üzerinde
+atomik olarak korunuyor. Aynı içerik aynı siparişi döndürüyor; farklı içerik 409.
+Regresyon kapsamı: retry, eşzamanlılık, yeniden başlatma ve müşteri izolasyonu.
+
+Not: Bunu ana sohbet modeline sormak yardımcı modelin çalıştığını kanıtlamaz.
+Utility davranışı, ürünün başlık/commit mesajı üretme eyleminden gözlenmelidir.

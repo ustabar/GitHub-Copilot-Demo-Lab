@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup><TargetFramework>net10.0</TargetFramework></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Orders.Api\Orders.Api.csproj" />
+    <Compile Include="..\..\src\DemoEntryPoint.cs" Link="Program.cs" />
+  </ItemGroup>
+</Project>

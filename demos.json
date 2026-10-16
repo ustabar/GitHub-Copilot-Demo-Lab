@@ -1,0 +1,16 @@
+{
+  "title": "GitHub Copilot - Mukerrer Siparisi Onleme",
+  "apiPort": 5100,
+  "webPort": 5173,
+  "demos": [
+    { "id": "01", "folder": "01-context-plan", "title": "Baglam ve Plan", "slide": 8, "baselineMode": "fixed" },
+    { "id": "02", "folder": "02-parallel-development", "title": "Paralel Gelistirme", "slide": 13, "baselineMode": "fixed" },
+    { "id": "03", "folder": "03-test-automation", "title": "Test Otomasyonu", "slide": 17, "baselineMode": "duplicate" },
+    { "id": "04", "folder": "04-human-feedback", "title": "Insan Geri Bildirimi", "slide": 21, "baselineMode": "memory" },
+    { "id": "05", "folder": "05-rubber-duck", "title": "Ikinci Gorus", "slide": 22, "baselineMode": "payload" },
+    { "id": "06", "folder": "06-pr-quality", "title": "PR Kalite Sureci", "slide": 25, "baselineMode": "fixed" },
+    { "id": "07", "folder": "07-troubleshoot", "title": "Teshis ve Izlenebilirlik", "slide": 28, "baselineMode": "fixed" },
+    { "id": "08", "folder": "08-usage-byok", "title": "Kullanim ve BYOK", "slide": 32, "baselineMode": "fixed" },
+    { "id": "09", "folder": "09-automations", "title": "Tekrar Eden Kalite Taramasi", "slide": 34, "baselineMode": "fixed" }
+  ]
+}

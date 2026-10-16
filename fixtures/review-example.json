@@ -1,0 +1,28 @@
+{
+  "synthetic": true,
+  "executed": false,
+  "generatedByCopilot": false,
+  "githubPrNumber": null,
+  "githubUrl": null,
+  "warning": "Illustrative teaching comments only. These are not real review findings, executed Copilot output or test evidence.",
+  "examples": [
+    {
+      "demo": "inlinefeedback",
+      "checkpoint": "memory",
+      "comment": "Aynı veri deposuyla process restart sonrasında aynı anahtar özgün siparişi döndürüyor mu? Yalnız aynı process içinde yapılan tekrar testi bu riski kanıtlamaz.",
+      "suggestedEvidence": "restart-replay acceptance case"
+    },
+    {
+      "demo": "rubberduck",
+      "checkpoint": "payload",
+      "comment": "Anahtar bulunduğunda hemen dönüyorsun. İkinci istekte quantity=2 olursa istemci hangi siparişi görür? sku/quantity karşılaştırmasını kararın neresinde yapıyorsun?",
+      "suggestedEvidence": "changed-quantity and changed-sku acceptance cases"
+    },
+    {
+      "demo": "pr-ci-comment-conflict",
+      "checkpoint": "fixed",
+      "comment": "Aynı anahtar iki sentetik müşteride kullanıldığında depolama anahtarı ve GET filtreleri ayrışıyor mu? Çakışma çözümünden sonra testi tekrar çalıştır.",
+      "suggestedEvidence": "customer-scoped-key, customer-scoped-list and customer-scoped-read acceptance cases"
+    }
+  ]
+}
